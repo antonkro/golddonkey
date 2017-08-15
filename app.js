@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-/*logging*/
+/* logging */
 var winston = require('winston')
 winston.level='debug'; //info, verbose, debug
 
