@@ -1,25 +1,55 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+/**
+ * limiting file access
+ */
+require('fs-lock')({
+    'file_accessdir': [__dirname, '/debug'],
+    'open_basedir': ['/usr/local/share/node_modules', __dirname]
+});
 
-/* logging */
+/**
+ * external modules
+ */
+const
+    express = require('express'),
+    path = require('path'),
+    favicon = require('serve-favicon'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
+    fs = require("fs"),
+    rimraf = require("rimraf");
+
+/* ##############  BEGIN DEBUGGING   ############*/
+// debug folders
+var isCleaning=true;
+if (isCleaning) {
+    if (fs.existsSync("./debug")) {
+        rimraf("./debug", function (err) {
+            if (!err) {
+                fs.mkdirSync("./debug");
+                fs.mkdirSync("./debug/sites");
+            }
+        })
+    } else {
+        fs.mkdirSync("./debug");
+        fs.mkdirSync("./debug/sites");
+    }
+}
+
+
+// logging
 var winston = require('winston')
-winston.level='debug'; //info, verbose, debug
+winston.level = 'debug'; //info, verbose, debug
+
+/* ##############  END DEBUGGING   ############*/
 
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 var filters = require('./routes/filters');
 
-//var eka= new (require('./scrappers/eka'))();
-//winston.log('debug',eka.getData());
-
-
-
 var app = express();
+var eka = new (require('./scrappers/eka'))("s-multimedia-elektronik", "stuttgart", "c161l9280r30");
+eka.fetchData();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,7 +60,7 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 //app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -40,21 +70,21 @@ app.use('/filters', filters);
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;

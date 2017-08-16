@@ -1,60 +1,89 @@
-var winston = require('winston');
-var request = require('request');
-var cheerio = require('cheerio');
+const winston = require('winston'),
+    request = require('request'),
+    cheerio = require('cheerio'),
+    fs = require('fs'),
+    htmlparser2 = require('htmlparser2');
+
+var category = "";
+var location = "";
+var range = "";
+const basic_url = "https://www.ebay-kleinanzeigen.de/"
+var url = "";
+var site_counter = 0;
+var site = "";
+
+function eka_scraper(category, location, range) {
+    this.category = category;
+    this.location = location;
+    this.range = range;
+    winston.log("debug", "eka scraper initialized!");
+}
 
 
-var data;
-// var url = "https://www.ebay-kleinanzeigen.de/"
-var basic_url = "https://www.ebay-kleinanzeigen.de/"
-
-
-function eka_scraper(category, location,range ) {
-    winston.log("debug", "inside_eka_scraper");
-
-    for (var i = 0; i < 2; i++) {
-        var url = basic_url + "/" + category + "/" + location + "/seite:"+i+"/"+range;
+eka_scraper.prototype.fetchData = function () {
+    for (var i = 0; i < 1; i++) {
+        url = basic_url + "/" + this.category + "/" + this.location + "/seite:" + i + "/" + this.range;
+        winston.log("debug", url);
 
         request(url, function (error, response, html) {
             if (!error) {
 
                 var $ = cheerio.load(html);
+                var items = $('article')
+                // winston.log('debug',items.toString());
+                var parser = new htmlparser2.Parser({
+                    onopentag: function(name, attribs){
+                        if(attribs.class === "aditem"){
+                            console.log(attribs);
+                        }
+                    },
+                    ontext: function(text){
+                        // console.log("-->", text);
+                    },
+                    onclosetag: function(tagname){
+                        // if(tagname === "script"){
+                        //     console.log("That's it?!");
+                        // }
+                    }
+                }, {decodeEntities: true});
 
-                var title, release, rating;
-                var json = {title: "", release: "", rating: ""};
-
-                // We'll use the unique header class as a starting point.
-
-                $('#srchrslt-adtable, .adtime, .text-module-begin, .aditem-details').filter(function () {
-
-                    // Let'sstore the data we filter into a variable so we can easily see what's going on.
-
-
-                    winston.log("debug", $(this).toString());
-
-                    // this.data = $(this);
-
-                    // In examining rthe DOM we notice that the title rests within the first child element of the header tag.
-                    // Utilizing jQuery we can easily navigate and get the text by writing the following code:
-
-                    //title = data.children().first();
-                    //json.title = title;
-
-
-                })
-                // var $all =$('#home-ads');
-                // var $titles= $all.filter('.itemtile-title');
+                parser.write(items.toString());
+                parser.end();
+                // items.each(function (i, elem) {
+                //     if (i == 3) {
+                //
+                //         console.log(elem.attribs['data-adid']);
+                //         console.log(elem.parent);
+                //         return false;
+                //     }
+                //     //    data-adid="687727753"
+                // });
+                // winston.log("debug",items('h2'));
+                //
+                // fs.writeFile("./debug/firstitem.html", items, function (err) {
+                //     if (err) {
+                //         return console.log(err);
+                //     }
+                //     winston.log("debug", "debug html file was saved!");
+                // });
 
 
-                // winston.log("debug", ""+$bodies);
+                if (winston.level === 'debug' && typeof site_counter !== 'undefined') {
+                    site = site + items;
+                    fs.writeFile("./debug/sites/site_" + site_counter + ".html", items, function (err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        winston.log("debug", "debug html file was saved!");
+                    });
+                    site_counter++;
+                }
+
+
             }
-        })
-
+        });
     }
-}
 
-
-eka_scraper.prototype.getData = function () {
-    return this.data.toString();
 }
 
 
