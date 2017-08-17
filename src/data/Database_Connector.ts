@@ -24,19 +24,19 @@ namespace Database_Connector {
     }
 
 
-    export function saveList(key: number, list: any, ttl: number) {
-        winston.debug(client.HMSET(key, list, redis.print, function (err) {
+    export function saveList(key: number, ttl, list: any) {
+        client.HMSET(key, list, function (err) {
             if (err) {
                 winston.error('Redis: ' + err);
             }
             else {
-                winston.debug(client.send_command('EXPIRE', [key, ttl], function (err) {
+                client.send_command('EXPIRE', [key, ttl], function (err) {
                     if (err) {
                         winston.error('Redis saveList: ' + err);
                     }
-                }));
+                });
             }
-        }));
+        })
         //
     }
 
@@ -45,7 +45,7 @@ namespace Database_Connector {
             if (err) {
                 winston.error("Redis load: " + err);
             }
-            else if(reply){
+            else if (reply) {
                 cb(reply);
             }
             else {
@@ -66,6 +66,10 @@ namespace Database_Connector {
 
             }
         });
+    }
+
+    export function exit() {
+        client.end();
     }
 
     // export function exists(key: any, cb: (exist: any) => any): void {

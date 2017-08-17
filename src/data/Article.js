@@ -14,7 +14,7 @@ class Article {
     }
     save() {
         Constants_1.Constants.get(Constants_1.Constants.eka_ttl_key, function (ttl) {
-            Database_Connector_1.Database_Connector.saveList(this._id, {
+            Database_Connector_1.Database_Connector.saveList(this._id, ttl, {
                 "title": this._title,
                 "description": this._description,
                 "location": this._location,
@@ -22,9 +22,9 @@ class Article {
                 "price_negotiable": this._price_negotiable,
                 "url": this._url,
                 "time": this._time,
-                "created": Date().toString()
-            }, ttl);
-        });
+                "created": Date().toString(),
+            });
+        }.bind(this));
     }
     load(cb) {
         Database_Connector_1.Database_Connector.loadList(this.id, function (loadedArticle) {

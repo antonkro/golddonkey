@@ -39,10 +39,12 @@ class eka_scraper {
             var debug=true,site_counter = 0, site = "";
         }
 
-        Constants.get(Constants.eka_url_key, function (url_default) {
-            for (var i = 0; i < 1; i++) {
-                this._url = url_default + "/" + this.category + "/" + this.location + "/seite:" + i + "/" + this.range;
-                winston.log("debug", this._url);
+
+
+        Constants.getMulti([Constants.eka_url_key,Constants.eka_max_sites_key], function (multi) {
+            for (var i = 0; i < (Number(multi.get(Constants.eka_max_sites_key))+1); i++) {
+                // winston.debug(this._url);
+                this._url = multi.get(Constants.eka_url_key) + "/" + this.category + "/" + this.location + "/seite:" + i + "/" + this.range;
 
                 request(this._url, function (error, response, html) {
                     if (!error) {
@@ -62,23 +64,21 @@ class eka_scraper {
                         // }
                         // $ = cheerio.load(items.toString()); //only sections
                         $('article').filter(function (i, elem) {
-                            if (i == 3) {
                                 let article = new Article($(this).attr('data-adid'));
 
 
                                 $ = cheerio.load($(this).html());
                                 article.title = $('.text-module-begin').text();
                                 article.description = $('p').text();
-                                article.url = url_default + $('a').prop('href');
+                                article.url = multi.get(Constants.eka_url_key) + $('a').prop('href');
                                 article.price = $('strong').text().replace("VB", "").replace("€", "").replace(" ", "");
                                 article.price_negotiable = $('strong').text().includes("VB");
                                 article.location = $('.aditem-details').text()
                                     .replace($('strong').text(), "")
                                     .replace(" ", "").replace(/(?:\r\n|\r|\n)/g, "");
                                 article.time = $('.aditem-addon').text().replace(" ", "").replace(/(?:\r\n|\r|\n)/g, "");
-                            }
-
-
+                                // winston.debug(article.toString());
+                                article.save();
                         })
                         // items.each(function (i, elem) {
                         //     if (i == 3) {
@@ -104,7 +104,7 @@ class eka_scraper {
                         // });
 
 
-                        if (debug && typeof site_counter !== 'undefined') {
+                        if (debug && typeof site_counter !== 'undefined' && i=== 0) {
                             site = site + items;
                             fs.writeFile("./debug/sites/site_" + site_counter + ".html", items, function (err) {
                                 if (err) {
@@ -121,11 +121,8 @@ class eka_scraper {
             }
 
 
-        });
-
-
+        }.bind(this));
     }
-
     get url(): string {
         return this._url;
     }

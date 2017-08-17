@@ -31,7 +31,7 @@ class Article {
 
     public save() {
         Constants.get(Constants.eka_ttl_key, function (ttl) {
-            Database_Connector.saveList(this._id,
+            Database_Connector.saveList(this._id,ttl,
                 {
                     "title": this._title,
                     "description": this._description,
@@ -40,10 +40,9 @@ class Article {
                     "price_negotiable": this._price_negotiable,
                     "url": this._url,
                     "time": this._time,
-                    "created": Date().toString()
-                }
-                , ttl)
-        });
+                    "created": Date().toString(),
+                });
+        }.bind(this));
     }
 
     public load(cb: () => any): void {

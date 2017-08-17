@@ -59,17 +59,19 @@ var users = require('./routes/users');
 var filters = require('./routes/filters');
 
 var app = express();
+
+/* ##############  BEGIN TESTING ############*/
 var eka = new (require('./scrappers/eka'))("s-multimedia-elektronik", "stuttgart", "c161l9280r30");
 // eka.fetchData();
-let article = new Article(1111111);
-article.title="Test Title";
-article.description="Test Description";
-article.location="Test Location";
-article.price =100;
-article.price_negotiable=true;
-article.url="https://www.heise.de";
-article.time="Heute";
-
+// let article = new Article(1111111);
+// article.title="Test Title";
+// article.description="Test Description";
+// article.location="Test Location";
+// article.price =100;
+// article.price_negotiable=true;
+// article.url="https://www.heise.de";
+// article.time="Heute";
+//
 // article.save();
 // let article2 = new Article(article._id);
 // article2.load(() => {
@@ -77,10 +79,10 @@ article.time="Heute";
 //     winston.debug(article2.toString());
 //
 // });
-Constants.get(Constants.eka_ttl_key,function (val) {
-
-});
-
+// Constants.get(Constants.eka_ttl_key,function (val){
+//     winston.debug(val);
+// });
+/* ##############  END TESTING ############*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

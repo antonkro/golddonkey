@@ -24,19 +24,19 @@ var Database_Connector;
         });
     }
     Database_Connector.save = save;
-    function saveList(key, list, ttl) {
-        winston.debug(client.HMSET(key, list, redis.print, function (err) {
+    function saveList(key, ttl, list) {
+        client.HMSET(key, list, function (err) {
             if (err) {
                 winston.error('Redis: ' + err);
             }
             else {
-                winston.debug(client.send_command('EXPIRE', [key, ttl], function (err) {
+                client.send_command('EXPIRE', [key, ttl], function (err) {
                     if (err) {
                         winston.error('Redis saveList: ' + err);
                     }
-                }));
+                });
             }
-        }));
+        });
         //
     }
     Database_Connector.saveList = saveList;
@@ -66,6 +66,10 @@ var Database_Connector;
         });
     }
     Database_Connector.loadList = loadList;
+    function exit() {
+        client.end();
+    }
+    Database_Connector.exit = exit;
     // export function exists(key: any, cb: (exist: any) => any): void {
     //     winston.debug(client.send_command('EXISTS', [key], function (err, reply) {
     //         if (err) {

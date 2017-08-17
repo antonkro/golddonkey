@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const winston = require("winston");
 const http = require("http");
 const app = require("./app");
+const Database_Connector_1 = require("./data/Database_Connector");
 // var app = require('../app');
 // var debug = require('debug')('golddonkey:server');
 // var http = require('http');
@@ -70,3 +71,6 @@ function onListening() {
         : 'port ' + addr.port;
     winston.info('Listening on ' + bind);
 }
+process.on('exit', function () {
+    Database_Connector_1.Database_Connector.exit();
+});
