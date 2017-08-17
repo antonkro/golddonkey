@@ -1,46 +1,32 @@
-import * as winston from "winston";
-import * as request from "request";
-import * as cheerio from "cheerio";
-import * as fs from "fs";
-
-import {Article} from "../data/Article";
-import {Constants} from "../data/Constants";
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const winston = require("winston");
+const request = require("request");
+const cheerio = require("cheerio");
+const fs = require("fs");
+const Article_1 = require("../data/Article");
+const Constants_1 = require("../data/Constants");
 // const winston = require('winston'),
 //     request = require('request'),
 //     cheerio = require('cheerio'),
 //     fs = require('fs');
 // parse5 = require('parse5');
-
-
 if (winston.level === 'debug') {
     var site_counter = 0, site = "";
 }
-
 class eka_scraper {
-
-    private category: string;
-    private location: string;
-    private range: string;
-    private _url: string;
-
-
     constructor(category, location, range) {
         this.category = category;
         this.location = location;
         this.range = range;
         // winston.log("debug", "eka scraper initialized!");
     }
-
-
-    public fetchData() {
+    fetchData() {
         for (var i = 0; i < 1; i++) {
-            this._url = Constants.eka_url + "/" + this.category + "/" + this.location + "/seite:" + i + "/" + this.range;
+            this._url = Constants_1.Constants.eka_url + "/" + this.category + "/" + this.location + "/seite:" + i + "/" + this.range;
             winston.log("debug", this._url);
-
             request(this._url, function (error, response, html) {
                 if (!error) {
-
                     var $ = cheerio.load(html);
                     var items = $('article');
                     // winston.log('debug',items.toString());
@@ -56,21 +42,20 @@ class eka_scraper {
                     // }
                     // $ = cheerio.load(items.toString()); //only sections
                     $('article').filter(function (i, elem) {
-                        if (i == 1) {
-                            let article = new Article($(this).attr('data-adid'));
-
-
+                        if (i == 3) {
+                            let article = new Article_1.Article($(this).attr('data-adid'));
                             $ = cheerio.load($(this).html());
                             article.title = $('.text-module-begin').text();
-                            article.description=$('p').text();
-                            article.url=Constants.eka_url + $('a').prop('href');
-
-
-                            winston.log('debug',Constants.eka_url + $('a').prop('href'));
+                            article.description = $('p').text();
+                            article.url = Constants_1.Constants.eka_url + $('a').prop('href');
+                            article.price = $('strong').text().replace("VB", "").replace("€", "").replace(" ", "");
+                            article.price_negotiable = $('strong').text().includes("VB");
+                            article.location = $('.aditem-details').text()
+                                .replace($('strong').text(), "")
+                                .replace(" ", "").replace(/(?:\r\n|\r|\n)/g, "");
+                            article.time = $('.aditem-addon').text().replace(" ", "").replace(/(?:\r\n|\r|\n)/g, "");
                         }
-
-
-                    })
+                    });
                     // items.each(function (i, elem) {
                     //     if (i == 3) {
                     //         // elem
@@ -86,15 +71,12 @@ class eka_scraper {
                     // //     //    data-adid="687727753"
                     // });
                     // winston.log("debug",items('h2'));
-
                     // fs.writeFile("./debug/firstitem.html", items, function (err) {
                     //     if (err) {
                     //         return console.log(err);
                     //     }
                     //     winston.log("debug", "debug html file was saved!");
                     // });
-
-
                     if (winston.level === 'debug' && typeof site_counter !== 'undefined') {
                         site = site + items;
                         fs.writeFile("./debug/sites/site_" + site_counter + ".html", items, function (err) {
@@ -105,18 +87,12 @@ class eka_scraper {
                         });
                         site_counter++;
                     }
-
-
                 }
             });
         }
-
     }
-
-    get url(): string {
+    get url() {
         return this._url;
     }
 }
-
-
 module.exports = eka_scraper;

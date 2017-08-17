@@ -1,7 +1,11 @@
-#!/usr/bin/env node
-var app = require('../app');
-var debug = require('debug')('golddonkey:server');
-var http = require('http');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const winston = require("winston");
+const http = require("http");
+const app = require("./app");
+// var app = require('../app');
+// var debug = require('debug')('golddonkey:server');
+// var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
@@ -45,11 +49,11 @@ function onError(error) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            winston.error(bind + ' requires elevated privileges');
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            winston.error(bind + ' is already in use');
             process.exit(1);
             break;
         default:
@@ -64,5 +68,5 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    winston.info('Listening on ' + bind);
 }
