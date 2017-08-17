@@ -14,22 +14,69 @@ namespace Database_Connector {
     // winston.debug(client.set(key, value, redis.print));
 //        client.end();
 //     }
-    export function saveList(key: number, list: any) {
-        winston.debug(client.HMSET(key, list, redis.print));
+
+    export function save(key: any, value: any) {
+        client.set(key, value, function (err) {
+            if (err) {
+                winston.error("Redis save: " + err);
+            }
+        })
     }
 
-    export function load(key: number, cb: (loadedObject:any) => any): void {
-        client.hgetall(key, function (err, obj ) {
+
+    export function saveList(key: number, list: any, ttl: number) {
+        winston.debug(client.HMSET(key, list, redis.print, function (err) {
             if (err) {
-                winston.err("Error "+ err)
+                winston.error('Redis: ' + err);
+            }
+            else {
+                winston.debug(client.send_command('EXPIRE', [key, ttl], function (err) {
+                    if (err) {
+                        winston.error('Redis saveList: ' + err);
+                    }
+                }));
+            }
+        }));
+        //
+    }
+
+    export function load(key: any, cb: (loadedObject: any) => any): void {
+        client.get(key, function (err, reply) {
+            if (err) {
+                winston.error("Redis load: " + err);
+            }
+            else if(reply){
+                cb(reply);
+            }
+            else {
+                cb(false);
+            }
+        })
+    }
+
+
+    export function loadList(key: number, cb: (loadedObjectList: any) => any): void {
+        client.hgetall(key, function (err, obj) {
+            if (err) {
+                winston.err("Redis: loadList" + err)
 
             } else {
-                winston.debug("Object with ID " + key+" was loaded from DB");
+                winston.debug("Object with ID " + key + " was loaded from DB");
                 cb(obj);
 
             }
         });
     }
+
+    // export function exists(key: any, cb: (exist: any) => any): void {
+    //     winston.debug(client.send_command('EXISTS', [key], function (err, reply) {
+    //         if (err) {
+    //             winston.error('Redis :exists ' + err);
+    //         } else {
+    //             cb(reply);
+    //         }
+    //     }));
+    // }
 
 }
 export {Database_Connector};

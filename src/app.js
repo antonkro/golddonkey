@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const Article_1 = require("./data/Article");
+const Constants_1 = require("./data/Constants");
 /**
  * limiting file access
  */
@@ -60,11 +61,14 @@ article.price = 100;
 article.price_negotiable = true;
 article.url = "https://www.heise.de";
 article.time = "Heute";
-article.save();
-let article2 = new Article_1.Article(article._id);
-article2.load(() => {
-    winston.debug("article 2 loaded");
-    winston.debug(article2.toString());
+// article.save();
+// let article2 = new Article(article._id);
+// article2.load(() => {
+//     winston.debug("article 2 loaded");
+//     winston.debug(article2.toString());
+//
+// });
+Constants_1.Constants.get(Constants_1.Constants.eka_ttl_key, function (val) {
 });
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

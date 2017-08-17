@@ -7,6 +7,7 @@ import * as bodyParser from "body-parser";
 import * as fs from "fs";
 import {Article} from "./data/Article";
 import {Database_Connector} from  "./data/Database_Connector";
+import {Constants} from "./data/Constants";
 
 /**
  * limiting file access
@@ -69,13 +70,14 @@ article.price_negotiable=true;
 article.url="https://www.heise.de";
 article.time="Heute";
 
-article.save();
-
-
-let article2 = new Article(article._id);
-article2.load(() => {
-    winston.debug("article 2 loaded");
-    winston.debug(article2.toString());
+// article.save();
+// let article2 = new Article(article._id);
+// article2.load(() => {
+//     winston.debug("article 2 loaded");
+//     winston.debug(article2.toString());
+//
+// });
+Constants.get(Constants.eka_ttl_key,function (val) {
 
 });
 

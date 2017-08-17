@@ -1,28 +1,41 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Database_Connector_1 = require("./Database_Connector");
+const Constants_1 = require("./Constants");
 class Article {
+    get created() {
+        return this._created;
+    }
+    set created(value) {
+        this._created = value;
+    }
     constructor(id) {
         this._id = id;
     }
     save() {
-        Database_Connector_1.Database_Connector.saveList(this._id, {
-            "title": this._title,
-            "description": this._description,
-            "location": this._location,
-            "price": this._price,
-            "price_negotiable": this._price_negotiable,
-            "time": this._time
+        Constants_1.Constants.get(Constants_1.Constants.eka_ttl_key, function (ttl) {
+            Database_Connector_1.Database_Connector.saveList(this._id, {
+                "title": this._title,
+                "description": this._description,
+                "location": this._location,
+                "price": this._price,
+                "price_negotiable": this._price_negotiable,
+                "url": this._url,
+                "time": this._time,
+                "created": Date().toString()
+            }, ttl);
         });
     }
     load(cb) {
-        Database_Connector_1.Database_Connector.load(this.id, function (loadedArticle) {
+        Database_Connector_1.Database_Connector.loadList(this.id, function (loadedArticle) {
             this.title = loadedArticle.title.toString();
             this.description = loadedArticle.description;
             this.location = loadedArticle.location;
             this.price = loadedArticle.price;
             this.price_negotiable = loadedArticle.price_negotiable;
+            this.url = loadedArticle.url;
             this.time = loadedArticle.time;
+            this.created = loadedArticle.created;
             cb();
         }.bind(this));
     }
@@ -85,8 +98,9 @@ class Article {
             + this._location + '\n'
             + this._price + '\n'
             + this._price_negotiable + '\n'
+            + this._url + '\n'
             + this._time + '\n'
-            + this._url;
+            + this._created;
     }
 }
 exports.Article = Article;
