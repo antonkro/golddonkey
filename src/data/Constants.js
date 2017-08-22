@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Database_Connector_1 = require("./Database_Connector");
+const Database_Connector_1 = require("./DatabaseConnector");
 const winston = require("winston");
 var Constants;
 (function (Constants) {
@@ -64,9 +64,9 @@ var Constants;
         });
     }
     // export function eka_ttl_lazy(cb: (loadedObject: number) => any): void {
-    //     Database_Connector.load(eka_ttl_name, function (loadedObject) {
+    //     DatabaseConnector.load(eka_ttl_name, function (loadedObject) {
     //         if (loadedObject === false) {
-    //             Database_Connector.save(eka_ttl_name, eka_ttl_default);
+    //             DatabaseConnector.save(eka_ttl_name, eka_ttl_default);
     //             cb(eka_ttl_default);
     //         } else {
     //             cb(loadedObject);
@@ -75,6 +75,6 @@ var Constants;
     //
     // }
     //
-    // Database_Connector.save("eka_ttl",eka_url);
+    // DatabaseConnector.save("eka_ttl",eka_url);
 })(Constants || (Constants = {}));
 exports.Constants = Constants;

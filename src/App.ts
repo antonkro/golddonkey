@@ -9,7 +9,7 @@ import * as hbs from "express-handlebars";
 // import * as index from "./routes/index"
 // import * as filters from "./routes/filters"
 import {Article} from "./data/Article";
-import {Database_Connector} from  "./data/Database_Connector";
+import {DatabaseConnector} from  "./data/DatabaseConnector";
 import {Constants} from "./data/Constants";
 import {Index} from "./routes/Index"
 import {Overview} from "./routes/Overview"

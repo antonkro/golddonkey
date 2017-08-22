@@ -1,7 +1,6 @@
 import * as winston from "winston";
-import {Database_Connector} from  "./Database_Connector";
-import load = Database_Connector.load;
 import {Constants} from "./Constants";
+import {DatabaseConnector} from "./DatabaseConnector";
 
 class Article {
     get created(): string {
@@ -29,9 +28,9 @@ class Article {
     }
 
 
-    public save() {
+    public save(cb: (success: boolean) => any): void {
         Constants.get(Constants.eka_ttl_key, function (ttl) {
-            Database_Connector.saveList(this._id,ttl,
+            DatabaseConnector.saveList(this._id, ttl,
                 {
                     "title": this._title,
                     "description": this._description,
@@ -41,17 +40,19 @@ class Article {
                     "url": this._url,
                     "time": this._time,
                     "created": Date().toString(),
+                }, (cbv) => {
+                    cb(cbv);
                 });
         }.bind(this));
     }
 
     public load(cb: () => any): void {
-        Database_Connector.loadList(this.id, function (loadedArticle) {
+        DatabaseConnector.loadList(this.id, function (loadedArticle) {
             this.title = loadedArticle.title.toString();
             this.description = loadedArticle.description;
             this.location = loadedArticle.location;
-            this.price = loadedArticle.price;
-            this.price_negotiable = loadedArticle.price_negotiable;
+            this.price = Number(loadedArticle.price);
+            this.price_negotiable = Boolean(loadedArticle.price_negotiable);
             this.url = loadedArticle.url;
             this.time = loadedArticle.time;
             this.created = loadedArticle.created;

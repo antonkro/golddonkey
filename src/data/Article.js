@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Database_Connector_1 = require("./Database_Connector");
+const Database_Connector_1 = require("./DatabaseConnector");
 const Constants_1 = require("./Constants");
 class Article {
     get created() {

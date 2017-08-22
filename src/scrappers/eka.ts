@@ -14,7 +14,7 @@ import {Constants} from "../data/Constants";
 
 
 
-class eka_scraper {
+class ekaScraper {
 
 
     private category: string;
@@ -78,7 +78,9 @@ class eka_scraper {
                                     .replace(" ", "").replace(/(?:\r\n|\r|\n)/g, "");
                                 article.time = $('.aditem-addon').text().replace(" ", "").replace(/(?:\r\n|\r|\n)/g, "");
                                 // winston.debug(article.toString());
-                                article.save();
+                                article.save(success => {
+                                    if(!success) winston.error("Error saving article in eka");
+                                });
                         })
                         // items.each(function (i, elem) {
                         //     if (i == 3) {
@@ -127,4 +129,4 @@ class eka_scraper {
         return this._url;
     }
 }
-module.exports = eka_scraper;
+module.exports = ekaScraper;

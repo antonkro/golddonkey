@@ -1,7 +1,7 @@
 import * as redis from "redis";
 import * as winston from "winston";
 
-namespace Database_Connector {
+namespace DatabaseConnector {
     var client = redis.createClient();
     client.on("error", function (err) {
         winston.error('error', "Error" + err);
@@ -15,24 +15,33 @@ namespace Database_Connector {
 //        client.end();
 //     }
 
-    export function save(key: any, value: any) {
+    export function save(key: any, value: any, cb :(success:boolean) => any):void {
         client.set(key, value, function (err) {
             if (err) {
                 winston.error("Redis save: " + err);
+                cb(false);
+            }
+            else{
+                cb(true);
             }
         })
     }
 
 
-    export function saveList(key: number, ttl, list: any) {
+    export function saveList(key: any, ttl, list: any, cb:(success:boolean)=>any):void {
         client.HMSET(key, list, function (err) {
             if (err) {
                 winston.error('Redis: ' + err);
+                cb(false);
             }
             else {
                 client.send_command('EXPIRE', [key, ttl], function (err) {
                     if (err) {
                         winston.error('Redis saveList: ' + err);
+                        cb(false);
+                    }
+                    else{
+                        cb(true);
                     }
                 });
             }
@@ -55,13 +64,13 @@ namespace Database_Connector {
     }
 
 
-    export function loadList(key: number, cb: (loadedObjectList: any) => any): void {
+    export function loadList(key: any, cb: (loadedObjectList: any) => any): void {
         client.hgetall(key, function (err, obj) {
             if (err) {
                 winston.err("Redis: loadList" + err)
 
             } else {
-                winston.debug("Object with ID " + key + " was loaded from DB");
+                // winston.debug("Object with ID " + key + " was loaded from DB");
                 cb(obj);
 
             }
@@ -97,4 +106,4 @@ namespace Database_Connector {
     // }
 
 }
-export {Database_Connector};
+export {DatabaseConnector};

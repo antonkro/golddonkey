@@ -1,10 +1,10 @@
-import {Database_Connector} from  "./Database_Connector";
+import {DatabaseConnector} from  "./DatabaseConnector";
 import * as winston from "winston";
 namespace Constants {
 
-    export const eka_url_key="eka_url";
-    export const eka_ttl_key="eka_ttl";
-    export const eka_max_sites_key="eka_max_sites_key";
+    export const eka_url_key = "eka_url";
+    export const eka_ttl_key = "eka_ttl";
+    export const eka_max_sites_key = "eka_max_sites_key";
 
     var notLoaded = true;
     var consts: Map<string, string> = new Map<string, string>();
@@ -27,15 +27,15 @@ namespace Constants {
         }
     }
 
-    export function getMulti(keys:string[],cb: (cbv: any) => any): void {
+    export function getMulti(keys: string[], cb: (cbv: any) => any): void {
         var multi: Map<string, any> = new Map<string, any>();
-        var itemsProcessed =0;
+        var itemsProcessed = 0;
         keys.forEach(function (key) {
-            get(key,function (value) {
-                multi.set(key,value);
+            get(key, function (value) {
+                multi.set(key, value);
                 winston.debug(value);
                 itemsProcessed++;
-                if(itemsProcessed===keys.length){
+                if (itemsProcessed === keys.length) {
                     cb(multi);
                 }
             })
@@ -45,23 +45,24 @@ namespace Constants {
     function init(cb: () => any): void {
         var itemsProcessed = 0;
         consts_default.forEach((entry, index) => {
-                load(index, consts_default.get(index), function (loadedConsts) {
-                    consts.set(index, loadedConsts);
-                    itemsProcessed++;
-                    if(itemsProcessed === consts_default.size) {
-                        cb();
-                    }
-                })
-            });
+            load(index, consts_default.get(index), function (loadedConsts) {
+                consts.set(index, loadedConsts);
+                itemsProcessed++;
+                if (itemsProcessed === consts_default.size) {
+                    cb();
+                }
+            })
+        });
 
 
     }
 
     function load(key: string, defaultValue: string, cb: (loadedConsts: string) => any): void {
-        Database_Connector.load(key, function (loadedConsts) {
+        DatabaseConnector.load(key, function (loadedConsts) {
             if (loadedConsts === false) {
-                Database_Connector.save(key, defaultValue);
-                cb(defaultValue);
+                DatabaseConnector.save(key, defaultValue, success => {
+                    if(success) cb(defaultValue);
+                });
             } else {
                 cb(loadedConsts);
             }
@@ -70,9 +71,9 @@ namespace Constants {
     }
 
     // export function eka_ttl_lazy(cb: (loadedObject: number) => any): void {
-    //     Database_Connector.load(eka_ttl_name, function (loadedObject) {
+    //     DatabaseConnector.load(eka_ttl_name, function (loadedObject) {
     //         if (loadedObject === false) {
-    //             Database_Connector.save(eka_ttl_name, eka_ttl_default);
+    //             DatabaseConnector.save(eka_ttl_name, eka_ttl_default);
     //             cb(eka_ttl_default);
     //         } else {
     //             cb(loadedObject);
@@ -82,7 +83,7 @@ namespace Constants {
     // }
 
     //
-    // Database_Connector.save("eka_ttl",eka_url);
+    // DatabaseConnector.save("eka_ttl",eka_url);
 
 
 }
