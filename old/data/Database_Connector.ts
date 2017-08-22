@@ -68,20 +68,6 @@ namespace Database_Connector {
         });
     }
 
-    export function drop(key: any, cb: (success: boolean) => any): void {
-        client.send_command('DEL', [key], function (err,result) {
-            if (err) {
-                winston.error('Redis del: ' + err);
-            }
-            else if(result===1){
-                cb(true);
-            }
-            else{
-                cb(false);
-            }
-        });
-    }
-
     export function exit() {
         client.end();
     }

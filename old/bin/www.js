@@ -1,16 +1,20 @@
+#!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const winston = require("winston");
 const http = require("http");
-const app = require("./app");
-const Database_Connector_1 = require("./data/Database_Connector");
+const app = require("../app");
+const Database_Connector_1 = require("../data/Database_Connector");
+/**
+ * Module dependencies.
+ */
 // var app = require('../app');
-// var debug = require('debug')('golddonkey:server');
+// var debug = require('debug')('05-express-first-app:server');
 // var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '8000');
 app.set('port', port);
 /**
  * Create HTTP server.
@@ -69,7 +73,7 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    winston.info('Listening on ' + bind);
+    winston.debug('Listening on ' + bind);
 }
 process.on('exit', function () {
     Database_Connector_1.Database_Connector.exit();

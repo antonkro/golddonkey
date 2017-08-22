@@ -1,0 +1,31 @@
+{
+  "name": "golddonkey",
+  "version": "0.0.1",
+  "author": "ak",
+  "license": "",
+  "devDependencies": {
+    "@types/node": "^8.0.24",
+    "typescript": "^2.4.2"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cheerio": "1.0.0-rc.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "express-handlebars": "^3.0.0",
+    "fs": "0.0.1-security",
+    "fs-lock": "^1.2.0",
+    "path": "^0.12.7",
+    "redis": "^2.8.0",
+    "request": "2.81.0",
+    "rimraf": "^2.6.1",
+    "serve-favicon": "~2.4.2",
+    "ts-node": "^3.3.0",
+    "winston": "^2.3.1"
+  },
+  "scripts": {
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./bin/www.ts"
+  }
+}

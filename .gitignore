@@ -3,3 +3,5 @@
 node_modules
 img_sources
 debug
+dist
+npm-debug.log

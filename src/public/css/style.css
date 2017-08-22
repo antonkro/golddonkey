@@ -1,0 +1,17 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+.golddonkey{
+  background-color: white;
+  width:20%;
+  height:20%
+}
+#golddonkey_image{
+  width:100%;
+  height:100%
+}

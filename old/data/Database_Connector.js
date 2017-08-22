@@ -1,30 +1,30 @@
-import * as redis from "redis";
-import * as winston from "winston";
-
-namespace Database_Connector {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const redis = require("redis");
+const winston = require("winston");
+var Database_Connector;
+(function (Database_Connector) {
     var client = redis.createClient();
     client.on("error", function (err) {
         winston.error('error', "Error" + err);
-    })
+    });
     client.on('connect', function () {
-        winston.info("Database connection established")
-    })
+        winston.info("Database connection established");
+    });
     // export function saveKey(key: number, value: any) {
     // winston.log(client.set("key", "val", redis.print));
     // winston.debug(client.set(key, value, redis.print));
-//        client.end();
-//     }
-
-    export function save(key: any, value: any) {
+    //        client.end();
+    //     }
+    function save(key, value) {
         client.set(key, value, function (err) {
             if (err) {
                 winston.error("Redis save: " + err);
             }
-        })
+        });
     }
-
-
-    export function saveList(key: number, ttl, list: any) {
+    Database_Connector.save = save;
+    function saveList(key, ttl, list) {
         client.HMSET(key, list, function (err) {
             if (err) {
                 winston.error('Redis: ' + err);
@@ -36,11 +36,11 @@ namespace Database_Connector {
                     }
                 });
             }
-        })
+        });
         //
     }
-
-    export function load(key: any, cb: (loadedObject: any) => any): void {
+    Database_Connector.saveList = saveList;
+    function load(key, cb) {
         client.get(key, function (err, reply) {
             if (err) {
                 winston.error("Redis load: " + err);
@@ -51,41 +51,25 @@ namespace Database_Connector {
             else {
                 cb(false);
             }
-        })
+        });
     }
-
-
-    export function loadList(key: number, cb: (loadedObjectList: any) => any): void {
+    Database_Connector.load = load;
+    function loadList(key, cb) {
         client.hgetall(key, function (err, obj) {
             if (err) {
-                winston.err("Redis: loadList" + err)
-
-            } else {
+                winston.err("Redis: loadList" + err);
+            }
+            else {
                 winston.debug("Object with ID " + key + " was loaded from DB");
                 cb(obj);
-
             }
         });
     }
-
-    export function drop(key: any, cb: (success: boolean) => any): void {
-        client.send_command('DEL', [key], function (err,result) {
-            if (err) {
-                winston.error('Redis del: ' + err);
-            }
-            else if(result===1){
-                cb(true);
-            }
-            else{
-                cb(false);
-            }
-        });
-    }
-
-    export function exit() {
+    Database_Connector.loadList = loadList;
+    function exit() {
         client.end();
     }
-
+    Database_Connector.exit = exit;
     // export function exists(key: any, cb: (exist: any) => any): void {
     //     winston.debug(client.send_command('EXISTS', [key], function (err, reply) {
     //         if (err) {
@@ -95,6 +79,5 @@ namespace Database_Connector {
     //         }
     //     }));
     // }
-
-}
-export {Database_Connector};
+})(Database_Connector || (Database_Connector = {}));
+exports.Database_Connector = Database_Connector;

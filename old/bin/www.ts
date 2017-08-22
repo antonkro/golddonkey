@@ -1,16 +1,23 @@
+#!/usr/bin/env node
+
 import * as winston from "winston";
 import * as http from "http";
-import * as app from "./app";
-import {Database_Connector} from  "./data/Database_Connector";
+import * as app from "../app";
+import {Database_Connector} from  "../data/Database_Connector";
+
+/**
+ * Module dependencies.
+ */
+
 // var app = require('../app');
-// var debug = require('debug')('golddonkey:server');
+// var debug = require('debug')('05-express-first-app:server');
 // var http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '8000');
 app.set('port', port);
 
 /**
@@ -84,7 +91,7 @@ function onListening() {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    winston.info('Listening on ' + bind);
+    winston.debug('Listening on ' + bind);
 }
 
 process.on('exit', function () {
