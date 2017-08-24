@@ -15,14 +15,25 @@ namespace DatabaseConnector {
 //        client.end();
 //     }
 
-    export function save(key: any, value: any, cb: (success: boolean) => any): void {
+    export function save(key: any,ttl: number ,value: any, cb: (success: boolean) => any): void {
         client.set(key, value, function (err) {
             if (err) {
                 winston.error("Redis save: " + err);
                 cb(false);
             }
             else {
-                cb(true);
+                if (ttl === -1) {
+                    cb(true);
+                } else {
+                    client.send_command('EXPIRE', [key, ttl], (err) => {
+                        if (err) {
+                            winston.error('Redis saveArray: ' + err)
+                            cb(false);
+                        } else {
+                            cb(true);
+                        }
+                    })
+                }
             }
         })
     }
@@ -31,19 +42,22 @@ namespace DatabaseConnector {
     export function saveList(key: string, ttl: number, list: any, cb: (success: boolean) => any): void {
         client.HMSET(key, list, function (err) {
             if (err) {
-                winston.error('Redis: ' + err);
+                winston.error('Redis saveList: ' + err);
                 cb(false);
             }
             else {
-                client.send_command('EXPIRE', [key, ttl], function (err) {
-                    if (err) {
-                        winston.error('Redis saveList: ' + err);
-                        cb(false);
-                    }
-                    else {
-                        cb(true);
-                    }
-                });
+                if (ttl === -1) {
+                    cb(true);
+                } else {
+                    client.send_command('EXPIRE', [key, ttl], (err) => {
+                        if (err) {
+                            winston.error('Redis saveList: ' + err)
+                            cb(false);
+                        } else {
+                            cb(true);
+                        }
+                    })
+                }
             }
         })
         //

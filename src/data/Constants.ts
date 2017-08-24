@@ -63,7 +63,7 @@ namespace Constants {
     function load(username:string,key: string, defaultValue: string, cb: (loadedConsts: string) => any): void {
         DatabaseConnector.load(key, function (loadedConsts) {
             if (loadedConsts === false) {
-                DatabaseConnector.save(username+":"+key, defaultValue, success => {
+                DatabaseConnector.save(username+":"+key, -1,defaultValue, success => {
                     if(success) cb(defaultValue);
                 });
             } else {

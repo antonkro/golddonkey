@@ -22,7 +22,7 @@ describe('DatabaseConnector', () => {
     it('save load ', (cb: () => any): void => {
 
 
-        DatabaseConnector.save(test_key_1, test_value_1, (success => {
+        DatabaseConnector.save(test_key_1,-1, test_value_1, (success => {
             expect(success).to.be.equal(true);
             DatabaseConnector.load(test_key_1, (loadedObject) => {
                 // expect(loadedObject.).to.be.equal(test_key_1);
