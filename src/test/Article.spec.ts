@@ -5,6 +5,7 @@ var assert = chai.assert;
 var expect = chai.expect;
 
 describe('Article', () => {
+    var username="TestUser"
     var article_id = 22222222;
     var prekey="test"
     let article = new Article(article_id,prekey);
@@ -17,7 +18,7 @@ describe('Article', () => {
     article.time = "Heute";
 
     it('save load', (cb: () => any): void => {
-        article.save((success) => {
+        article.save(username,(success) => {
             expect(success).to.be.equal(true);
 
             let article_2 = new Article(article_id,prekey);

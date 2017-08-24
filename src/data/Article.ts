@@ -34,10 +34,10 @@ class Article {
     }
 
 
-    public save(cb: (success: boolean) => any): void {
+    public save(username:string,cb: (success: boolean) => any): void {
 
 
-        Constants.get(Constants.eka_ttl_key, function (ttl) {
+        Constants.get(username,Constants.eka_ttl_key, function (ttl) {
             DatabaseConnector.saveList(this._key, ttl,
                 {
                     "title": this._title,

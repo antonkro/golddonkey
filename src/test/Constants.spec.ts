@@ -5,15 +5,15 @@ var expect = chai.expect;
 var should = chai.should();
 
 describe('Constants', () => {
+    var username="TestUser"
     it('get ', (cb: () => any): void => {
         var iterator = Constants.getKeys();
         var hasNext: boolean = true;
         while (hasNext) {
             var key = iterator.next().value;
             if (key) {
-                Constants.get(key, (value) => {
+                Constants.get(username,key, (value) => {
                     should.exist(value);
-                    assert.typeOf(value, 'string');
                 })
             } else {
                 hasNext = false;
@@ -29,7 +29,7 @@ describe('Constants', () => {
                 Constants.eka_ttl_key
             ];
 
-        Constants.getMulti(array, (multi) => {
+        Constants.getMulti(username,array, (multi) => {
             should.exist(multi);
             assert.equal(multi.size, array.length);
             cb();

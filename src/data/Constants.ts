@@ -18,9 +18,9 @@ namespace Constants {
         return consts_default.keys()
     }
 
-    export function get(key: string, cb: (cbv: string) => any): void {
+    export function get(username:string,key: string, cb: (cbv: string) => any): void {
         if (notLoaded) {
-            init(function () {
+            init(username,function () {
                 notLoaded = false;
                 cb(consts.get(key));
             })
@@ -30,11 +30,11 @@ namespace Constants {
         }
     }
 
-    export function getMulti(keys: string[], cb: (cbv: any) => any): void {
+    export function getMulti(username:string,keys: string[], cb: (cbv: any) => any): void {
         var multi: Map<string, any> = new Map<string, any>();
         var itemsProcessed = 0;
         keys.forEach(function (key) {
-            get(key, function (value) {
+            get(username,key, function (value) {
                 multi.set(key, value);
                 // winston.debug(value);
                 itemsProcessed++;
@@ -45,10 +45,10 @@ namespace Constants {
         });
     }
 
-    function init(cb: () => any): void {
+    function init(username:string,cb: () => any): void {
         var itemsProcessed = 0;
         consts_default.forEach((entry, index) => {
-            load(index, consts_default.get(index), function (loadedConsts) {
+            load(username,index, consts_default.get(index), function (loadedConsts) {
                 consts.set(index, loadedConsts);
                 itemsProcessed++;
                 if (itemsProcessed === consts_default.size) {
@@ -60,10 +60,10 @@ namespace Constants {
 
     }
 
-    function load(key: string, defaultValue: string, cb: (loadedConsts: string) => any): void {
+    function load(username:string,key: string, defaultValue: string, cb: (loadedConsts: string) => any): void {
         DatabaseConnector.load(key, function (loadedConsts) {
             if (loadedConsts === false) {
-                DatabaseConnector.save(key, defaultValue, success => {
+                DatabaseConnector.save(username+":"+key, defaultValue, success => {
                     if(success) cb(defaultValue);
                 });
             } else {
