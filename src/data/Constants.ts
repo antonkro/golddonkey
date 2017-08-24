@@ -14,8 +14,11 @@ namespace Constants {
     consts_default.set(eka_ttl_key, (24 * 60 * 60));
     consts_default.set(eka_max_sites_key, 50);
 
+    export function getKeys():any{
+        return consts_default.keys()
+    }
 
-    export function get(key: string, cb: (cbv: any) => any): void {
+    export function get(key: string, cb: (cbv: string) => any): void {
         if (notLoaded) {
             init(function () {
                 notLoaded = false;
@@ -33,7 +36,7 @@ namespace Constants {
         keys.forEach(function (key) {
             get(key, function (value) {
                 multi.set(key, value);
-                winston.debug(value);
+                // winston.debug(value);
                 itemsProcessed++;
                 if (itemsProcessed === keys.length) {
                     cb(multi);

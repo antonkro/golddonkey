@@ -5,8 +5,9 @@ var assert = chai.assert;
 var expect = chai.expect;
 
 describe('Article', () => {
-    var article_key = 22222222;
-    let article = new Article(article_key);
+    var article_id = 22222222;
+    var prekey="test"
+    let article = new Article(article_id,prekey);
     article.title = "Test Title";
     article.description = "Test Description";
     article.location = "Test Location";
@@ -19,7 +20,7 @@ describe('Article', () => {
         article.save((success) => {
             expect(success).to.be.equal(true);
 
-            let article_2 = new Article(article_key);
+            let article_2 = new Article(article_id,prekey);
             article_2.load(() => {
 
                 expect(article_2.title).to.be.equal(article.title);
@@ -30,7 +31,7 @@ describe('Article', () => {
                 expect(article_2.url).to.be.equal(article.url);
                 expect(article_2.time).to.be.equal(article.time);
 
-                DatabaseConnector.drop(article_key, (success2) => {
+                DatabaseConnector.drop(article_2.key, (success2) => {
                     expect(success2).to.be.equal(true);
                     cb();
                 })

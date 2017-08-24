@@ -1,5 +1,6 @@
 import {DatabaseConnector} from  "../data/DatabaseConnector";
 import * as chai from "chai"
+import load = DatabaseConnector.load;
 var assert = chai.assert;
 var expect = chai.expect;
 
@@ -15,10 +16,14 @@ describe('DatabaseConnector', () => {
 
     };
 
+    var array_key_1 = "TestArray1";
+    var array_1 = ["test1", "test2", "test3", "test4"];
+
     it('save load ', (cb: () => any): void => {
 
 
         DatabaseConnector.save(test_key_1, test_value_1, (success => {
+            expect(success).to.be.equal(true);
             DatabaseConnector.load(test_key_1, (loadedObject) => {
                 // expect(loadedObject.).to.be.equal(test_key_1);
                 expect(loadedObject).to.be.equal(test_value_1);
@@ -52,5 +57,26 @@ describe('DatabaseConnector', () => {
         })
     });
 
+    it('saveArray, loadArray', (cb: () => any): void => {
+        DatabaseConnector.saveArray(array_key_1, -1, array_1, (success) => {
+            expect(success).to.be.equal(true);
+            DatabaseConnector.loadArray(array_key_1, (loadedArray) => {
+                expect(Object.prototype.toString.call(loadedArray)).to.be.equal('[object Array]');
+                array_1.forEach((value, index) => {
+                    expect(loadedArray.includes(value)).to.be.equal(true);
+                    if (index === array_1.length) {
+                        cb();
+                    }
+                })
+                cb();
+            })
+        })
+    });
 
+    it('dropArray', (cb: () => any): void => {
+        DatabaseConnector.drop(array_key_1, (success) => {
+            expect(success).to.be.equal(true);
+            cb();
+        })
+    });
 });

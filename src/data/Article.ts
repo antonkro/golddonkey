@@ -11,7 +11,8 @@ class Article {
         this._created = value;
     }
 
-    readonly _id: number;
+    private readonly _id: number;
+    private readonly _key: string
     private _title: string;
     private _description: string;
     private _location: string;
@@ -22,15 +23,22 @@ class Article {
     private _created: string;
     private _url: string;
 
-
-    constructor(id?: number) {
+    constructor(id: number, prekey?: string) {
         this._id = id;
+        if (prekey) {
+            this._key = prekey+":"+String(this._id);
+        }
+        else {
+            this._key = String(id);
+        }
     }
 
 
     public save(cb: (success: boolean) => any): void {
+
+
         Constants.get(Constants.eka_ttl_key, function (ttl) {
-            DatabaseConnector.saveList(this._id, ttl,
+            DatabaseConnector.saveList(this._key, ttl,
                 {
                     "title": this._title,
                     "description": this._description,
@@ -47,7 +55,7 @@ class Article {
     }
 
     public load(cb: () => any): void {
-        DatabaseConnector.loadList(this.id, function (loadedArticle) {
+        DatabaseConnector.loadList(this._key, function (loadedArticle) {
             this.title = loadedArticle.title.toString();
             this.description = loadedArticle.description;
             this.location = loadedArticle.location;
@@ -63,6 +71,10 @@ class Article {
 
     get id(): number {
         return this._id;
+    }
+
+    get key(): string {
+        return this._key;
     }
 
     get title(): string {

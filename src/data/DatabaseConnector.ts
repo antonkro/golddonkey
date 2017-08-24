@@ -15,20 +15,20 @@ namespace DatabaseConnector {
 //        client.end();
 //     }
 
-    export function save(key: any, value: any, cb :(success:boolean) => any):void {
+    export function save(key: any, value: any, cb: (success: boolean) => any): void {
         client.set(key, value, function (err) {
             if (err) {
                 winston.error("Redis save: " + err);
                 cb(false);
             }
-            else{
+            else {
                 cb(true);
             }
         })
     }
 
 
-    export function saveList(key: any, ttl, list: any, cb:(success:boolean)=>any):void {
+    export function saveList(key: string, ttl: number, list: any, cb: (success: boolean) => any): void {
         client.HMSET(key, list, function (err) {
             if (err) {
                 winston.error('Redis: ' + err);
@@ -40,13 +40,36 @@ namespace DatabaseConnector {
                         winston.error('Redis saveList: ' + err);
                         cb(false);
                     }
-                    else{
+                    else {
                         cb(true);
                     }
                 });
             }
         })
         //
+    }
+
+    export function saveArray(key: any, ttl: number, array: string[], cb: (success: boolean) => any): void {
+
+        client.sadd(key, array, (err) => {
+            if (err) {
+                winston.error('Redis saveArray: ' + err)
+                cb(false);
+            } else {
+                if (ttl === -1) {
+                    cb(true);
+                } else {
+                    client.send_command('EXPIRE', [key, ttl], (err) => {
+                        if (err) {
+                            winston.error('Redis saveArray: ' + err)
+                            cb(false);
+                        } else {
+                            cb(true);
+                        }
+                    })
+                }
+            }
+        });
     }
 
     export function load(key: any, cb: (loadedObject: any) => any): void {
@@ -68,29 +91,53 @@ namespace DatabaseConnector {
         client.hgetall(key, function (err, obj) {
             if (err) {
                 winston.err("Redis: loadList" + err)
+                cb(false);
 
-            } else {
+            } else if (obj) {
                 // winston.debug("Object with ID " + key + " was loaded from DB");
                 cb(obj);
 
-            }
-        });
-    }
-
-    export function drop(key: any, cb: (success: boolean) => any): void {
-        client.send_command('DEL', [key], function (err,result) {
-            if (err) {
-                winston.error('Redis del: ' + err);
-            }
-            else if(result===1){
-                cb(true);
-            }
-            else{
+            } else {
                 cb(false);
             }
         });
     }
 
+    export function loadArray(key: any, cb: (loadedArray: any) => any): void {
+        client.send_command('SMEMBERS', [key], (err, array) => {
+            if (err) {
+                winston.err("Redis: loadArray" + err)
+                cb(false);
+            } else if (array.length===0) {
+                cb(false);
+            } else {
+                cb(array);
+            }
+        })
+    }
+
+    export function drop(key: any, cb: (success: boolean) => any): void {
+        client.send_command('DEL', [key], function (err, result) {
+            if (err) {
+                winston.error('Redis del: ' + err);
+            }
+            else if (result === 1) {
+                cb(true);
+            }
+            else {
+                cb(false);
+            }
+        });
+    }
+
+    export function getRegExKeys(regex:string, cb:(keys)=>any):void{
+        client.keys(regex,(err,replies)=>{
+            if(err){
+                cb(false);
+            }
+            cb(replies);
+        })
+    }
     export function exit() {
         client.end();
     }
