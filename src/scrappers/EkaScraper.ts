@@ -34,7 +34,7 @@ class EkaScraper {
         return username + ":" + taskID;
     }
 
-    public fetchData(username: string, taskID: string) {
+    public fetchData(username: string, taskID: string, cb: (finished: boolean) => any): void {
 
 
         // if (winston.level === 'debug') {
@@ -42,6 +42,7 @@ class EkaScraper {
         // }
 
         Constants.getMulti([Constants.eka_url_key, Constants.eka_max_sites_key], (multi) => {
+            var counter = 0;
             for (var i = 0; i < (Number(multi.get(Constants.eka_max_sites_key)) + 1); i++) {
 
                 this._url = multi.get(Constants.eka_url_key) + "/" + this.category + "/" + this.location + "/seite:" + i + "/" + this.range;
@@ -99,11 +100,7 @@ class EkaScraper {
                                 if (!success) winston.error("Error saving article in eka");
                             });
                         }
-                        // if (i === Number(multi.get(Constants.eka_max_sites_key))) {
-                        //     cb(true);
-                        // }
 
-                    })
 
                     // if (debug && typeof site_counter !== 'undefined' && i === 0) {
                     //     site = site + items;
@@ -115,15 +112,27 @@ class EkaScraper {
                     //     });
                     //     site_counter++;
                     // }
-
                 });
 
+                winston.debug("scrape site: "+ counter +"/"+Number(multi.get(Constants.eka_max_sites_key)));
+                // winston.debug();
+                if (Number(counter) === Number(multi.get(Constants.eka_max_sites_key))) {
+                    cb(true);
+                }
+                counter++;
             }
-        });
+            )
     }
+}
+)
+}
 
-    get url(): string {
-        return this._url;
-    }
+get
+url()
+:
+string
+{
+    return this._url;
+}
 }
 export {EkaScraper};
