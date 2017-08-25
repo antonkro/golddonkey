@@ -69,7 +69,7 @@ namespace UserManagement {
         DatabaseConnector.load(name, (loadedObject => {
             bcrypt.compare(password, loadedObject.hashedPassword, (err, res) => {
                 if (err) {
-                    winston.error(err)
+                    winston.error("User authenticate Error: "+err)
                     cb(false);
                 } else {
                     cb(res);
@@ -82,19 +82,15 @@ namespace UserManagement {
     export function updateUser(oldUsername: string, oldPassword: string, oldAdmin: boolean,
                                newUsername: string, newPassword: string, newAdmin: boolean,
                                cb: (success: boolean) => any): void {
-        // authenticate(oldUsername, oldUsername, (authenticated => {
-        //     if (!authenticated) cb(false);
+        authenticate(oldUsername, oldUsername, (authenticated => {
+            if (!authenticated) cb(false);
         //     else {
         //         if (oldUsername === newUsername) {
         //             let user = new User(oldUsername, newPassword, newAdmin)
         //         }
         //     }
-        // }))
-
-
+        }))
     }
-
-
 }
 
 export {User, UserManagement};
