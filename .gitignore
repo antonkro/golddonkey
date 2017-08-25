@@ -6,3 +6,4 @@ debug
 dist
 npm-debug.log
 password.txt
+certs
