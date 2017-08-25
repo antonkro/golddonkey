@@ -1,8 +1,11 @@
 import * as redis from "redis";
 import * as winston from "winston";
+import * as fs from "fs"
 
 namespace DatabaseConnector {
+
     var client = redis.createClient();
+    client.auth(fs.readFileSync(__dirname +'/../../password.txt', 'utf8').replace(/\r?\n|\r/g, " ").replace(" ",""));
     client.on("error", function (err) {
         winston.error('error', "Error" + err);
     })
@@ -15,7 +18,7 @@ namespace DatabaseConnector {
 //        client.end();
 //     }
 
-    export function save(key: any,ttl: number ,value: any, cb: (success: boolean) => any): void {
+    export function save(key: any, ttl: number, value: any, cb: (success: boolean) => any): void {
         client.set(key, value, function (err) {
             if (err) {
                 winston.error("Redis save: " + err);
@@ -122,7 +125,7 @@ namespace DatabaseConnector {
             if (err) {
                 winston.err("Redis: loadArray" + err)
                 cb(false);
-            } else if (array.length===0) {
+            } else if (array.length === 0) {
                 cb(false);
             } else {
                 cb(array);
@@ -144,14 +147,15 @@ namespace DatabaseConnector {
         });
     }
 
-    export function getRegExKeys(regex:string, cb:(keys)=>any):void{
-        client.keys(regex,(err,replies)=>{
-            if(err){
+    export function getRegExKeys(regex: string, cb: (keys) => any): void {
+        client.keys(regex, (err, replies) => {
+            if (err) {
                 cb(false);
             }
             cb(replies);
         })
     }
+
     export function exit() {
         client.end();
     }
